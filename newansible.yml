@@ -1,29 +1,15 @@
-var express = require('express');
-var app = express();
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+# This is a simple YAML configuration file for a user profile
 
-app.use(express.json());
+user:
+  username: "alice_wonder"
+  email: "alice@example.com"
+  is_active: true
+  preferences:
+    theme: "dark"
+    notifications: true
+  roles:
+    - admin
+    - editor
+    - viewer
 
-app.post('/', async function (req, res) {
-    console.log("Executing deployment...");
-
-    try {
-        const { stdout, stderr } = await exec(
-            "ansible-pull -U git@github.com:<GitHubUser>/<repo-name>.git <playbook>.yml"
-        );
-
-        console.log("stdout:", stdout);
-        if (stderr) console.error("stderr:", stderr);
-
-        res.json({ success: true, output: stdout });
-    } catch (error) {
-        console.error("Execution error:", error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-app.listen(8080, '127.0.0.1', () => {
-    console.log("Webhook running on http://127.0.0.1:8080");
-});
-
+# Data types shown: string, boolean, list of strings
