@@ -1,15 +1,11 @@
 # This is a simple YAML configuration file for a user profile
 
-user:
-  username: "alice_wonder"
-  email: "alice@example.com"
-  is_active: true
-  preferences:
-    theme: "dark"
-    notifications: true
-  roles:
-    - admin
-    - editor
-    - viewer
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: example task
+      debug:
+        msg: "Hello world"
 
 # Data types shown: string, boolean, list of strings
