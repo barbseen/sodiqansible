@@ -3,27 +3,27 @@ var app = express();
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-app.post('/', function(req, res){
+app.use(express.json());
+
+app.post('/', async function (req, res) {
+    console.log("Executing deployment...");
+
     try {
-        console.log('executing deployment...');
-        exec("ansible-pull -U git@github.com:<GitHubUser>/<repo-name>.git <playbook>.yml", (error, stdout, stderr) => {
-                if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-        }
-        if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-        }
+        const { stdout, stderr } = await exec(
+            "ansible-pull -U git@github.com:<GitHubUser>/<repo-name>.git <playbook>.yml"
+        );
 
-        console.log(`stdout: ${stdout}`);
+        console.log("stdout:", stdout);
+        if (stderr) console.error("stderr:", stderr);
 
-        });
-    } catch (e) {
-        console.log(e);
+        res.json({ success: true, output: stdout });
+    } catch (error) {
+        console.error("Execution error:", error);
+        res.status(500).json({ success: false, error: error.message });
     }
-
-    res.json({ received: true });
 });
 
-app.listen(8080, '127.0.0.1');
+app.listen(8080, '127.0.0.1', () => {
+    console.log("Webhook running on http://127.0.0.1:8080");
+});
+
